@@ -1,0 +1,22 @@
+	--if self.lift > 0 and love.keyboard.isDown(" ") then
+	--	self.lift = self.lift - dt
+	--	self.y_velocity = self.y_velocity + self.MAX_JUMP * (dt / self.liftMax)
+	--end
+	
+	--if self.y_velocity ~= 0 and self.lift >= 0 then --jumping
+	--	print("y " .. self.y .. " default y " .. self.y_default)
+	--	print("vel " .. self.y_velocity)
+	--	print("jet " .. self.lift)
+	--	--self.state = "jumping"
+	--	self.y = self.y - self.y_velocity * dt
+	--	self.y_velocity = self.y_velocity - self.GRAVITY * dt
+	--	if self.y > self.y_default then
+	--		self.y_velocity = 0
+	--		self.y = self.y_default
+	--		self.lift = self.liftMax
+	--		self.state = "walking"
+	--	elseif self.y < self.MAX_JUMP then
+	--		
+	--	end
+	--	self.anim:seek(2)
+	--end

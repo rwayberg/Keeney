@@ -1,0 +1,109 @@
+function ingame.update(dt)
+	if not paused then
+		ingame.moveBackground(dt)
+		player1:update(dt)
+		--stop because player was hit
+		if player1.hit then
+			bgSpeed = 0
+		else
+			if bgSpeed == 0 and ingameHUD.lifeCount > 0 then
+				bgSpeed = bgSpeed_Default
+			else
+				--game over screen
+			end
+		end
+		--ingame.playerUpdate(dt)
+		--update or remove clouds
+		for i=#cloudList,1,-1 do
+			if cloudList[i].offScreen == true then
+				table.remove(cloudList, i)
+			end
+		end
+		--add new clouds
+		cloudTimer = cloudTimer + dt
+		local cSpawnRand = math.random(0, 10)
+		if #cloudList < 10 and cloudTimer >= cloudSpawnTime and cSpawnRand == 4 then
+			ingame.createClouds(1)
+			cloudTimer = 0
+		end
+		for c=1,#cloudList,1 do
+			cloudList[c]:update(dt)
+		end
+
+		--bird update and remove
+		birdTimer = birdTimer + dt
+		if #birdList < 2 and cSpawnRand == 5 and birdTimer >= birdSpawnTime then
+			ingame.createBirds(1)
+			birdTimer = 0
+		end
+
+		for b=#birdList,1,-1 do
+			if birdList[b].offScreen == true then
+				table.remove(birdList, b)
+			else
+				birdList[b]:update(dt)
+			end
+		end
+
+		--cow update and remove
+		cowTimer = cowTimer + dt
+		if cowTimer >= cowSpawnTime then
+			ingame.createCows(1)
+			cowTimer = 0
+			if cowSpawnTime > 1 then
+				cowSpawnTime = cowSpawnTime - 0.3
+			else
+				cowSpawnTime = 1
+			end
+		end
+
+		if #cowList > 0 then
+			for cl=#cowList,1,-1 do
+				if cowList[cl].offScreen == true then
+					table.remove(cowList, cl)
+				else
+					cowList[cl]:update(dt)
+				end
+			end
+		end
+
+		--Check player collisions ax1,ay1,aw,ah, bx1,by1,bw,bh
+		local pBB = player1:getBBox()
+		for cowBB=#cowList,1,-1 do
+			local cBB = cowList[cowBB]:getBBox() 
+			if CheckCollision(pBB.x, pBB.y, pBB.w, pBB.h, cBB.x, cBB.y, cBB.w, cBB.h) then
+				ingameHUD:removeLife(1)
+				player1.lifeCount = ingameHUD.lifeCount
+				cowList[cowBB].offScreen = true
+				--print("Player hit a cow!")
+				--player1.hit = true
+				player1:collide()
+			end
+		end
+
+		--Update bullets
+		for bulletNumber=#bulletList,1,-1 do
+			if bulletList[bulletNumber].offScreen == true then
+				table.remove(bulletList, bulletNumber)
+			else
+				bulletList[bulletNumber]:update(dt)
+			end
+		end
+
+		--Check bullet collisions
+		for bulletNumber=#bulletList,1,-1 do
+			local bulletBox = bulletList[bulletNumber]:getBBox()
+			for cowNumber=#cowList,1,-1 do
+				local cowBox = cowList[cowNumber]:getBBox()
+				if CheckCollision(bulletBox.x, bulletBox.y, bulletBox.w, bulletBox.h, cowBox.x, cowBox.y, cowBox.w, cowBox.h) then
+					print("Bullet hit cow")
+					ingameHUD:addScore(100)
+					cowList[cowNumber].offScreen = true
+					bulletList[bulletNumber].offScreen = true
+				end
+			end
+		end
+	else
+		
+	end
+end
